@@ -1,0 +1,36 @@
+version: '3'
+networks:
+  etcd_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: '172.66.0.0/16'
+
+services:
+  etcd1:
+    build: .
+    container_name: etcd1
+    command: etcd --name etcd1 --data-dir=/data/etcd1.d --advertise-client-urls http://192.168.0.112:32379 --listen-client-urls http://0.0.0.0:2379 --listen-peer-urls http://0.0.0.0:2380 --initial-advertise-peer-urls http://etcd1:2380 --initial-cluster-token etcd-cluster --initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" --initial-cluster-state new
+    ports:
+      - 32379:2379
+      - 32380:2380
+    networks:
+      - etcd_net
+  etcd2:
+    build: .
+    container_name: etcd2
+    command: etcd --name etcd2 --data-dir=/data/etcd2.d --advertise-client-urls http://192.168.0.112:32381 --listen-client-urls http://0.0.0.0:2379 --listen-peer-urls http://0.0.0.0:2380 --initial-advertise-peer-urls http://etcd2:2380 --initial-cluster-token etcd-cluster --initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" --initial-cluster-state new
+    ports:
+      - 32381:2379
+      - 32382:2380
+    networks:
+      - etcd_net
+  etcd3:
+    build: .
+    container_name: etcd3
+    command: etcd --name etcd3 --data-dir=/data/etcd3.d --advertise-client-urls http://192.168.0.112:32383 --listen-client-urls http://0.0.0.0:2379 --listen-peer-urls http://0.0.0.0:2380 --initial-advertise-peer-urls http://etcd3:2380 --initial-cluster-token etcd-cluster --initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" --initial-cluster-state new
+    ports:
+      - 32383:2379
+      - 32384:2380
+    networks:
+      - etcd_net
